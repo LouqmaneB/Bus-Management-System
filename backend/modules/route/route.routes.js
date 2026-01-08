@@ -1,10 +1,24 @@
 import express from "express";
-import { addRoute, deleteRoute, getAllRoutes, getPoplarRoutes, updateRoute } from "./route.controller.js";
+import {
+  addRoute,
+  deleteRoute,
+  getAllRoutes,
+  getPoplarRoutes,
+  updateRoute,
+} from "./route.controller.js";
 
-export const routeRouter = express.Router();
+const routeRouter = express.Router();
 
-routeRouter.get("/", getAllRoutes);
+routeRouter
+  .route("/")
+  .get(getAllRoutes) // get all routes
+  .post(addRoute); // add route
+
 routeRouter.get("/popular", getPoplarRoutes);
-routeRouter.post("/", addRoute);
-routeRouter.put("/:id", updateRoute);
-routeRouter.delete("/:id", deleteRoute);
+
+routeRouter
+  .route("/:id")
+  .put(updateRoute) // update a route by id
+  .delete(deleteRoute); // delete route by id
+
+export default routeRouter;

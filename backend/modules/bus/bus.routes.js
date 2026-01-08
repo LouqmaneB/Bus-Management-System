@@ -1,10 +1,16 @@
 import express from "express";
 import { getAllBuses, addBus, updateBus, deleteBus } from "./bus.controller.js";
 
+const busRouter = express.Router();
 
-export const busRoutes = express.Router();
+busRouter
+  .route("/")
+  .get(getAllBuses) //get all bus
+  .post(addBus); // require auth
 
-busRoutes.get("/", getAllBuses);
-busRoutes.post("/", addBus); // require auth
-busRoutes.put("/:id", updateBus); // require auth
-busRoutes.delete("/:id", deleteBus); // require auth
+busRouter
+  .route("/:id")
+  .put(updateBus) // require auth
+  .delete(deleteBus); // require auth
+
+export default busRouter;

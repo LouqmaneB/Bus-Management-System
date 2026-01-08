@@ -2,6 +2,10 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { logger } from "../../utils/logger.js";
 import { Route } from "./route.model.js";
 
+/**
+ * @desc    Get all routes
+ * @route   GET /api/routes
+ */
 const getAllRoutes = asyncHandler(async (req, res) => {
   const routes = await Route.aggregate([
     {
@@ -14,7 +18,10 @@ const getAllRoutes = asyncHandler(async (req, res) => {
     },
   ]);
   logger.info("Fetched all routes");
-  res.json(routes);
+  res.json({
+    success: true,
+    data: routes,
+  });
 });
 
 // const searchRoutes = asyncHandler(async (req, res) => {
@@ -63,6 +70,10 @@ const getAllRoutes = asyncHandler(async (req, res) => {
 //   }
 // });
 
+/**
+ * @desc    Get poular routes
+ * @route   GET /api/routes/popular
+ */
 const getPoplarRoutes = asyncHandler(async (req, res) => {
   const popularRoutes = await Route.aggregate([
     {
@@ -77,35 +88,65 @@ const getPoplarRoutes = asyncHandler(async (req, res) => {
     { $limit: 6 },
   ]);
   logger.info("Fetched popular routes");
-  res.json(popularRoutes);
+  res.json({
+    success: true,
+    data: popularRoutes,
+  });
 });
 
+/**
+ * @desc    Add a route
+ * @route   POST /api/routes
+ */
 const addRoute = asyncHandler(async (req, res) => {
   const route = await Route.create(req.body);
   logger.info(`Route added: ${route.name}`);
-  res.status(201).json(route);
+  res.status(201).json({
+    success: true,
+    data: route,
+    message: `Route added: ${route.name}`,
+  });
 });
 
+/**
+ * @desc    Update a route
+ * @route   PUT /api/routes/:id
+ */
 const updateRoute = asyncHandler(async (req, res) => {
   const route = await Route.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
   if (!route) {
-    res.status(404);
-    throw new Error("Route not found");
+    return res.status(404).json({
+      success: false,
+      message: "Route not found",
+    });
   }
   logger.info(`Route updated: ${route._id}`);
-  res.json(route);
+  res.json({
+    success: true,
+    data: route,
+    message: `Route updated: ${route._id}`,
+  });
 });
 
+/**
+ * @desc    Delete a route
+ * @route   DELETE /api/routes/:id
+ */
 const deleteRoute = asyncHandler(async (req, res) => {
   const route = await Route.findByIdAndDelete(req.params.id);
   if (!route) {
-    res.status(404);
-    throw new Error("Route not found");
+    return res.status(404).json({
+      success: false,
+      message: "Route not found",
+    });
   }
   logger.info(`Route deleted: ${req.params.id}`);
-  res.status(204).end();
+  res.status(204).json({
+    success: true,
+    message: `Route deleted: ${req.params.id}`,
+  });
 });
 
 export { getAllRoutes, getPoplarRoutes, addRoute, updateRoute, deleteRoute };
