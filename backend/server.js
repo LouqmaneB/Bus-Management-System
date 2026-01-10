@@ -5,6 +5,7 @@ import { connectDB } from "./config/db.js";
 import busRouter from "./modules/bus/bus.routes.js";
 import routeRouter from "./modules/route/route.routes.js";
 import stopRouter from "./modules/stop/stop.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
@@ -15,6 +16,9 @@ app.use(express.json());
 app.use("/api/buses", busRouter);
 app.use("/api/routes", routeRouter);
 app.use("/api/stops", stopRouter);
+
+app.use(errorHandler)
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>

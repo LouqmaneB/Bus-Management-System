@@ -54,6 +54,7 @@ const stopSchema = new mongoose.Schema(
     },
   },
   {
+    strict: "throw",
     timestamps: true,
     toJSON: { // controlling the returned value by DB
       transform: function (doc, ret) {
