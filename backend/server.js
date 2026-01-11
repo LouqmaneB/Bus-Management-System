@@ -6,12 +6,16 @@ import busRouter from "./modules/bus/bus.routes.js";
 import routeRouter from "./modules/route/route.routes.js";
 import stopRouter from "./modules/stop/stop.routes.js";
 import userRouter from "./modules/user/user.routes.js";
+import authRoutes from "./modules/auth/auth.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
 connectDB();
 app.use(express.json());
+
+// Authentification
+app.use("/api", authRoutes)
 
 // Endpoints
 app.use("/api/buses", busRouter);

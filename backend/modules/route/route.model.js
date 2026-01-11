@@ -27,4 +27,4 @@ const routeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Route = mongoose.model("route", routeSchema);
+export const Route = mongoose.model("Route", routeSchema);

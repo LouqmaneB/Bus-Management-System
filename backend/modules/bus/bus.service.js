@@ -19,15 +19,12 @@ export default class BusServices {
       new: true,
       runValidators: true,
     });
-
     if (!bus) {
       const error = new Error("Bus not found");
       error.statusCode = 404;
       throw error;
     }
-
     logger.info("Bus updated", { id });
-
     return bus;
   }
 

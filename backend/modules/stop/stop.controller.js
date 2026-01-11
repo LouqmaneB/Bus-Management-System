@@ -11,8 +11,7 @@ const getStops = asyncHandler(async (req, res) => {
   const stops = await stopServices.getStops(req.query);
   res.json({
     success: true,
-    data: stops.data,
-    pagination: stops.pagination,
+    data: stops
   });
 });
 
@@ -57,8 +56,8 @@ const updateStop = asyncHandler(async (req, res) => {
  * @route   DELETE /api/stops/:id
  */
 const deleteStop = asyncHandler(async (req, res) => {
-  const stop = await stopServices.deleteStopById(req.params.id);
-  res.status(204).send;
+  await stopServices.deleteStopById(req.params.id);
+  res.status(204).send();
 });
 
 /**
@@ -69,8 +68,7 @@ const getNearbyStops = asyncHandler(async (req, res) => {
   const stops = await stopServices.getNearby(req.query);
   res.json({
     success: true,
-    data: stops,
-    count: stops.length,
+    data: { stops, count: stops.length },
   });
 });
 

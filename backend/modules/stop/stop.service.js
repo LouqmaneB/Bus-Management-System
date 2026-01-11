@@ -30,12 +30,12 @@ export default class StopServices {
     const sortOptions = {};
     sortOptions[sort] = sortOrder;
     const skip = (page - 1) * limit;
-    const [data, total] = await Promise.all([
+    const [stops, total] = await Promise.all([
       Stop.find(filter).sort(sortOptions).skip(skip).limit(parseInt(limit)),
       Stop.countDocuments(filter),
     ]);
     return {
-      data,
+      stops,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -63,29 +63,24 @@ export default class StopServices {
 
   async createStop(payload) {
     const { stop_name, latitude, longitude } = payload;
-
     if (!stop_name) {
       const error = new Error("Stop name is required");
       error.statusCode = 400;
       throw error;
     }
-
     if (!latitude || !longitude) {
       const error = new Error("Latitude and longitude are required");
       error.statusCode = 400;
       throw error;
     }
-
     const stopExists = await Stop.findOne({
       stop_name,
     });
-
     if (stopExists) {
       const error = new Error("Stop with this name or code already exists");
       error.statusCode = 409;
       throw error;
     }
-
     const stop = await Stop.create({
       ...payload,
       location: {
@@ -93,22 +88,18 @@ export default class StopServices {
         coordinates: [parseFloat(longitude), parseFloat(latitude)],
       },
     });
-
     logger.info(`Stop added: ${stop._id}`);
     return stop;
   }
 
   async updateStopById(id, payload) {
     const stop = await Stop.findById(id);
-
     if (!stop) {
       const error = new Error("Stop not found");
       error.statusCode = 404;
       throw error;
     }
-
     const updates = payload;
-
     // How coordinates are updated
     if (updates.latitude && updates.longitude) {
       updates.location = {
@@ -121,17 +112,14 @@ export default class StopServices {
       delete updates.latitude;
       delete updates.longitude;
     }
-
     if (updates.facilities) {
       updates.facilities = {
         ...stop.facilities.toObject(),
         ...updates.facilities, // overwrite the existing facilities
       };
     }
-
     Object.assign(stop, updates);
     const updatedStop = await stop.save();
-
     logger.info(`the stop ${id} is updated successfully`);
     return updatedStop;
   }
@@ -148,13 +136,11 @@ export default class StopServices {
 
   async getNearby(query) {
     const { lat, lng, radius = 5000 } = query;
-
     if (!lat || !lng) {
       const error = new Error("Latitude and longitude are required");
       error.statusCode = 400;
       throw error;
     }
-
     const stops = await Stop.find({
       location: {
         $near: {
@@ -166,6 +152,6 @@ export default class StopServices {
         },
       },
     }).limit(50); // Limit results
-    return stops
+    return stops;
   }
 }

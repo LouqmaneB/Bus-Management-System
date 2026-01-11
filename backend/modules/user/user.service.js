@@ -20,22 +20,21 @@ export default class UserService {
 
   async addUser(payload) {
     const user = await User.create(payload);
-    logger.info(`user added: ${user.plateNumber}`);
+    logger.info(`user added: ${user.email}`);
+    return user;
   }
+
   async updateUserById(id, payload) {
     const user = await User.findByIdAndUpdate(id, payload, {
       new: true,
       runValidators: true,
     });
-
     if (!user) {
       const error = new Error("user not found");
       error.statusCode = 404;
       throw error;
     }
-
     logger.info("user updated", { id });
-
     return user;
   }
 
@@ -47,5 +46,6 @@ export default class UserService {
       throw error;
     }
     logger.info(`user deleted: ${id}`);
+    return user;
   }
 }

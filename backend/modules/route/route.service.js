@@ -3,33 +3,13 @@ import { Route } from "./route.model.js";
 
 export default class RouteServices {
   async getAllRoutes() {
-    const routes = await Route.aggregate([
-      {
-        $lookup: {
-          from: "stops",
-          localField: "points.stop_id",
-          foreignField: "_id",
-          as: "stops",
-        },
-      },
-    ]);
+    const routes = await Route.find()
     logger.info("Fetched all routes");
     return routes;
   }
 
   async getPopularRoutes() {
-    const routes = await Route.aggregate([
-      {
-        $lookup: {
-          from: "stops",
-          localField: "points.stop_id",
-          foreignField: "_id",
-          as: "stops",
-        },
-      },
-      { $sort: { frequency_minutes: 1 } },
-      { $limit: 6 },
-    ]);
+    const routes = await Route.find();
     logger.info("Fetched popular routes");
     return routes;
   }
