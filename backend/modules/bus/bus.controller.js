@@ -5,7 +5,8 @@ const busServices = new BusServices();
 
 /**
  * @desc    Get all Bus
- * @route   GET /api/Bus
+ * @route   GET /api/bus
+ * @access  Public
  */
 const getAllBuses = asyncHandler(async (req, res) => {
   const buses = await busServices.getAllBuses();
@@ -17,7 +18,8 @@ const getAllBuses = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Add a Bus
- * @route   POST /api/Bus
+ * @route   POST /api/bus
+ * @access  Admin
  */
 const addBus = asyncHandler(async (req, res) => {
   const bus = busServices.addBus(req.body);
@@ -29,7 +31,8 @@ const addBus = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Update a Bus
- * @route   PUT /api/Bus/:id
+ * @route   PUT /api/bus/:id
+ * @access  Admin
  */
 const updateBus = asyncHandler(async (req, res) => {
   const bus = await busServices.updateById(req.params.id, req.body);
@@ -41,7 +44,8 @@ const updateBus = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Delete a Bus
- * @route   DELETE /api/Bus
+ * @route   DELETE /api/bus/:id
+ * @access  Admin
  */
 const deleteBus = asyncHandler(async (req, res) => {
   await busServices.deleteById(req.params.id);

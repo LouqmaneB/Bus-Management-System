@@ -15,7 +15,7 @@ connectDB();
 app.use(express.json());
 
 // Authentification
-app.use("/api", authRoutes)
+app.use("/api/auth", authRoutes)
 
 // Endpoints
 app.use("/api/buses", busRouter);

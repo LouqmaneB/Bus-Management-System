@@ -1,11 +1,12 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import AuthServices from "./auth.service";
+import AuthServices from "./auth.service.js";
 
 const authServices = new AuthServices();
 
 /**
  * @desc   register new user
- * @route  POST /api/register
+ * @route  POST /api/auth/register
+ * @access  Public
  */
 const register = asyncHandler(async (req, res) => {
   const user = await authServices.register(req.body);
@@ -17,7 +18,8 @@ const register = asyncHandler(async (req, res) => {
 
 /**
  * @desc   Log in
- * @route  POST /api/login
+ * @route  POST /api/auth/login
+ * @access  Public
  */
 const login = asyncHandler(async (req, res) => {
   const user = await authServices.login(req.body);

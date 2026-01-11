@@ -5,9 +5,11 @@ const userServices = new UserService();
 
 /**
  * @desc  get all users
+ * @route  GET /api/users
+ * @access  Admin
  */
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = userServices.getAllUsers();
+  const users = await userServices.getAllUsers();
   res.json({
     success: true,
     data: users,
@@ -16,9 +18,11 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 /**
  * @desc  get a user by id
+ * @route  GET /api/users/:id
+ * @access  Admin
  */
 const getUser = asyncHandler(async (req, res) => {
-  const users = userServices.getUser(req.params.id);
+  const users = await userServices.getUser(req.params.id);
   res.json({
     success: true,
     data: users,
@@ -28,6 +32,7 @@ const getUser = asyncHandler(async (req, res) => {
 /**
  * @desc    Add a user
  * @route   POST /api/users
+ * @access  Admin
  */
 const addUser = asyncHandler(async (req, res) => {
   const user = await userServices.addUser(req.body);
@@ -40,6 +45,7 @@ const addUser = asyncHandler(async (req, res) => {
 /**
  * @desc    Update a user
  * @route   PUT /api/users/:id
+ * @access  Admin
  */
 const updateUser = asyncHandler(async (req, res) => {
   const user = await userServices.updateUserById(req.params.id, req.body);
@@ -52,6 +58,7 @@ const updateUser = asyncHandler(async (req, res) => {
 /**
  * @desc    Delete a user
  * @route   DELETE /api/users/:id
+ * @access  Admin
  */
 const deleteUser = asyncHandler(async (req, res) => {
   await userServices.deleteUserById(req.params.id);

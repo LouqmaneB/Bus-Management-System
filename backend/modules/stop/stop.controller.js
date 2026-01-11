@@ -6,6 +6,7 @@ const stopServices = new StopServices();
 /**
  * @desc    Get all stops
  * @route   GET /api/stops
+ * @access  Public
  */
 const getStops = asyncHandler(async (req, res) => {
   const stops = await stopServices.getStops(req.query);
@@ -18,6 +19,7 @@ const getStops = asyncHandler(async (req, res) => {
 /**
  * @desc    Get stop by ID
  * @route   GET /api/stops/:id
+ * @access  Public
  */
 const getStopById = asyncHandler(async (req, res) => {
   const stop = await stopServices.getStopById(req.params.id);
@@ -30,6 +32,7 @@ const getStopById = asyncHandler(async (req, res) => {
 /**
  * @desc    Create a new stop
  * @route   POST /api/stops
+ * @access  Admin
  */
 const createStop = asyncHandler(async (req, res) => {
   const stop = await stopServices.createStop(req.body);
@@ -42,6 +45,7 @@ const createStop = asyncHandler(async (req, res) => {
 /**
  * @desc    Update a stop
  * @route   PUT /api/stops/:id
+ * @access  Admin
  */
 const updateStop = asyncHandler(async (req, res) => {
   const stop = await stopServices.updateStopById(req.params.id, req.body);
@@ -54,6 +58,7 @@ const updateStop = asyncHandler(async (req, res) => {
 /**
  * @desc    Delete a stop
  * @route   DELETE /api/stops/:id
+ * @access  Admin
  */
 const deleteStop = asyncHandler(async (req, res) => {
   await stopServices.deleteStopById(req.params.id);
@@ -63,6 +68,7 @@ const deleteStop = asyncHandler(async (req, res) => {
 /**
  * @desc    Get stops within radius(m)
  * @route   GET /api/stops/nearby
+ * @access  Public
  */
 const getNearbyStops = asyncHandler(async (req, res) => {
   const stops = await stopServices.getNearby(req.query);

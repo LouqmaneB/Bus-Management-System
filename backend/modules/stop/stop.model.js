@@ -21,7 +21,6 @@ const stopSchema = new mongoose.Schema(
     },
     stop_code: {
       type: String,
-      default: "",
       trim: true,
       unique: true,
       sparse: true, // Allows multiple empty strings
@@ -54,7 +53,6 @@ const stopSchema = new mongoose.Schema(
     },
   },
   {
-    strict: "throw",
     timestamps: true,
     toJSON: { // controlling the returned value by DB
       transform: function (doc, ret) {

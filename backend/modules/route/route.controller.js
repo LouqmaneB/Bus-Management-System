@@ -6,6 +6,7 @@ const routeServices = new RouteServices();
 /**
  * @desc    Get all routes
  * @route   GET /api/routes
+ * @access  Public
  */
 const getAllRoutes = asyncHandler(async (req, res) => {
   const routes = await routeServices.getAllRoutes();
@@ -18,6 +19,7 @@ const getAllRoutes = asyncHandler(async (req, res) => {
 /**
  * @desc    Get poular routes
  * @route   GET /api/routes/popular
+ * @access  Public
  */
 const getPoplarRoutes = asyncHandler(async (req, res) => {
   const popularRoutes = await routeServices.getPopularRoutes();
@@ -30,6 +32,7 @@ const getPoplarRoutes = asyncHandler(async (req, res) => {
 /**
  * @desc    Add a route
  * @route   POST /api/routes
+ * @access  Admin
  */
 const addRoute = asyncHandler(async (req, res) => {
   const route = await routeServices.addRoute(req.body);
@@ -42,6 +45,7 @@ const addRoute = asyncHandler(async (req, res) => {
 /**
  * @desc    Update a route
  * @route   PUT /api/routes/:id
+ * @access  Admin
  */
 const updateRoute = asyncHandler(async (req, res) => {
   const route = await routeServices.updateRouteById(req.params.id, req.body);
@@ -54,6 +58,7 @@ const updateRoute = asyncHandler(async (req, res) => {
 /**
  * @desc    Delete a route
  * @route   DELETE /api/routes/:id
+ * @access  Admin
  */
 const deleteRoute = asyncHandler(async (req, res) => {
   await routeServices.deleteRouteById(req.params.id);

@@ -14,8 +14,9 @@ export default class AuthServices {
       throw error;
     }
     const hashed = await hashPassword(password);
-    const user = await User.create({ name, email, password: hashed });
+    const user = await User.create({ ...payload, password: hashed });
     logger.info(`User registered: ${email}`);
+    user.password = undefined;
     return { user, token: generateToken(user) };
   }
 
@@ -28,6 +29,6 @@ export default class AuthServices {
       throw error;
     }
     logger.info(`User logged in: ${email}`);
-    return { user, token: generateToken(user) };
+    return { token: generateToken(user) };
   }
 }
