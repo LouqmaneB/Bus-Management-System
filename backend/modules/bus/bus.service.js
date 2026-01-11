@@ -11,6 +11,7 @@ export default class BusServices {
   async addBus(payload) {
     const bus = await Bus.create(payload);
     logger.info(`Bus added: ${bus.plateNumber}`);
+    return bus;
   }
 
   async updateById(id, payload) {
