@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User } from "../modules/user/user.model.js";
+import { logger } from "../utils/logger.js";
 
 /**
  *@desc  Protect routes
@@ -16,6 +17,10 @@ export const protect = async (req, res, next) => {
     if (!token) {
       const error = new Error("Not authorized, token missing");
       error.statusCode = 401;
+      logger.error(error.message, {
+        statusCode: error.statusCode,
+        path: req.originalUrl,
+      });
       throw error;
     }
 
@@ -24,6 +29,10 @@ export const protect = async (req, res, next) => {
     if (!user) {
       const error = new Error("Not authorized, user not found");
       error.statusCode = 401;
+      logger.error(error.message, {
+        statusCode: error.statusCode,
+        path: req.originalUrl,
+      });
       throw error;
     }
 

@@ -4,6 +4,7 @@ import {
   deleteRoute,
   getAllRoutes,
   getPoplarRoutes,
+  getRouteById,
   updateRoute,
 } from "./route.controller.js";
 import { authorize, protect } from "../../middlewares/auth.middleware.js";
@@ -19,6 +20,7 @@ routeRouter.get("/popular", getPoplarRoutes);
 
 routeRouter
   .route("/:id")
+  .get(getRouteById)
   .put(protect, authorize("admin"), updateRoute) // update a route by id
   .delete(protect, authorize("admin"), deleteRoute); // delete route by id
 

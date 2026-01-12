@@ -46,12 +46,6 @@ export default class StopServices {
   }
 
   async getStopById(id) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      // to be a middleware in futur
-      const error = new Error("Invalid stop ID format");
-      error.statusCode = 400;
-      throw error;
-    }
     const stop = await Stop.findById(id);
     if (!stop) {
       const error = new Error("Stop not found");

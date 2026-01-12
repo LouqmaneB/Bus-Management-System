@@ -4,6 +4,19 @@ import RouteServices from "./route.service.js";
 const routeServices = new RouteServices();
 
 /**
+ * @desc    Get a route by id
+ * @route   GET /api/routes/:id
+ * @access  Public
+ */
+const getRouteById = asyncHandler(async (req, res) => {
+  const route = await routeServices.getRouteById(req.params.id);
+  res.json({
+    success: true,
+    data: route,
+  });
+});
+
+/**
  * @desc    Get all routes
  * @route   GET /api/routes
  * @access  Public
@@ -65,4 +78,4 @@ const deleteRoute = asyncHandler(async (req, res) => {
   res.status(204).send();
 });
 
-export { getAllRoutes, getPoplarRoutes, addRoute, updateRoute, deleteRoute };
+export { getAllRoutes, getRouteById, getPoplarRoutes, addRoute, updateRoute, deleteRoute };

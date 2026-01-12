@@ -2,8 +2,15 @@ import { logger } from "../../utils/logger.js";
 import { Route } from "./route.model.js";
 
 export default class RouteServices {
+  async getRouteById(id) {
+    // id = new mongoose.Types.ObjectId(id);
+    const route = await Route.findById(id);
+    logger.info("Get the route" + id);
+    return route;
+  }
+
   async getAllRoutes() {
-    const routes = await Route.find()
+    const routes = await Route.find();
     logger.info("Fetched all routes");
     return routes;
   }

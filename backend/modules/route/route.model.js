@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 
 const routeSchema = new mongoose.Schema(
   {
-    routeNumber: { type: String, required: true, unique: true },
+    routeNumber: { type: String, required: true, unique: true, default: Date.now() },
     routeName: { type: String, required: true },
     description: String,
     stops: [
       {
+        _id: false,
         stopId: { type: mongoose.Schema.Types.ObjectId, ref: "Stop" },
         order: Number,
         arrivalTime: String,
