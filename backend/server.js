@@ -1,5 +1,6 @@
 import express from "express";
 import "dotenv/config";
+import cors from 'cors'
 
 import { connectDB } from "./config/db.js";
 import busRouter from "./modules/bus/bus.routes.js";
@@ -9,7 +10,15 @@ import userRouter from "./modules/user/user.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
+
 const app = express();
+
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 connectDB();
 app.use(express.json());
