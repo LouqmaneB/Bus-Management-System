@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Navigation, Route, Network } from 'lucide-react';
+import { Navigation, Route, Network } from "lucide-react";
 
 type Stop = {
   stopId: string;
@@ -69,14 +69,14 @@ export default function Home() {
           <div className="mt-8 w-full max-w-md">
             <div className="mt-4 flex gap-4 justify-center">
               <Button size="lg" variant={"default"} className="gap-2">
-                Search
+                <Link href="/search">Search</Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="bg-white/20 text-white border-white/40 hover:bg-white/30 hover:text-white"
               >
-                View All Routes
+                <Link href="/routes">View All Routes</Link>
               </Button>
             </div>
           </div>

@@ -2,5 +2,8 @@
 */node_modules/
 */logs/
 */.env
+
+# mindmap txt files / draft files
 strcture.txt
 str-v2.txt
+mapdraft.txt
