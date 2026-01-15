@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
 import { logger } from "../../utils/logger.js";
 import { Stop } from "./stop.model.js";
+import { Route } from "../route/route.model.js";
 
 export default class StopServices {
   async getStops(query) {
@@ -34,8 +34,22 @@ export default class StopServices {
       Stop.find(filter).sort(sortOptions).skip(skip).limit(parseInt(limit)),
       Stop.countDocuments(filter),
     ]);
+
+    const stopsWithRoutes = await Promise.all(
+      stops.map(async (stop) => {
+        const routes = await Route.find({
+          stops: { $elemMatch: { stopId: stop._id } },
+        }).select("_id routeNumber routeName routeColor");
+
+        return {
+          stop,
+          routes,
+        };
+      })
+    );
+
     return {
-      stops,
+      stopsWithRoutes,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -52,7 +66,10 @@ export default class StopServices {
       error.statusCode = 404;
       throw error;
     }
-    return stop;
+    const routes = await Route.find({
+      stops: { $elemMatch: { stopId: id } },
+    }).select("_id routeNumber routeName routeColor");
+    return { stop, routes };
   }
 
   async createStop(payload) {

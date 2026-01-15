@@ -4,19 +4,28 @@ import { Route } from "./route.model.js";
 export default class RouteServices {
   async getRouteById(id) {
     // id = new mongoose.Types.ObjectId(id);
-    const route = await Route.findById(id);
+    const route = await Route.findById(id).populate({
+      path: "stops.stopId",
+      model: "Stop",
+    });
     logger.info("Get the route" + id);
     return route;
   }
 
   async getAllRoutes() {
-    const routes = await Route.find();
+    const routes = await Route.find().populate({
+      path: "stops.stopId",
+      model: "Stop",
+    });;
     logger.info("Fetched all routes");
     return routes;
   }
 
   async getPopularRoutes() {
-    const routes = await Route.find();
+    const routes = await Route.find().populate({
+      path: "stops.stopId",
+      model: "Stop",
+    });;
     logger.info("Fetched popular routes");
     return routes;
   }
