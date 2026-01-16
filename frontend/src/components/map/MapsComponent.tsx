@@ -6,26 +6,26 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 export type LngLat = [number, number];
 type LatLng = [number, number];
-
+type routeProps = {
+  color: string;
+  route: LngLat[];
+};
 type MapComponentProps = {
-  coordinates?: LngLat[];
+  routes?: routeProps[];
+  onRouteClick?: (route: LatLng[]) => void;
 };
 
 const MAP_STYLE = "/api/route/style";
 
-// Flip coordinates from [lng, lat] to [lat, lng]
-/**
- * - Data is set in Flask app like [lng, lat] cause of leaflet and how its work,
- * - differntly in maplibre that use [lat, lng]
- * @returns [lat, lng]
- */
-function flipCoordinates(coords?: LatLng[]): LngLat[] {
+function flipCoordinates(coords?: LngLat[]): LatLng[] {
   if (!coords) return [];
   return coords.map(([lng, lat]) => [lat, lng]);
 }
 
-export default function MapComponent({ coordinates }: MapComponentProps) {
-  coordinates = flipCoordinates(coordinates);
+export default function MapComponent({
+  routes = [],
+  onRouteClick,
+}: MapComponentProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
 
@@ -47,10 +47,6 @@ export default function MapComponent({ coordinates }: MapComponentProps) {
     mapRef.current.addControl(new maplibregl.NavigationControl());
     mapRef.current.addControl(new maplibregl.ScaleControl());
 
-    mapRef.current.on("load", () => {
-      console.log("map loaded");
-    });
-
     return () => {
       mapRef.current?.remove();
       mapRef.current = null;
@@ -58,88 +54,87 @@ export default function MapComponent({ coordinates }: MapComponentProps) {
   }, []);
 
   useEffect(() => {
-    if (!mapRef.current || coordinates.length === 0) return;
+    if (!mapRef.current || !routes) return;
 
     const map = mapRef.current;
 
-    const loadRoute = async () => {
-      const response = await fetch("/api/route/ors", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ coordinates }),
-      });
+    const loadRoutes = async () => {
+      for (let j = 0; j < routes.length; j++) {
+        const flippedRoutes = flipCoordinates(routes[j].route);
 
-      if (!response.ok) return;
+        for (let i = 0; i < flippedRoutes.length; i++) {
+          const coords = flippedRoutes;
 
-      const geojson = await response.json();
+          const response = await fetch("/api/route/ors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ coordinates: coords }),
+          });
 
-      if (map.getLayer("busRouteLine")) map.removeLayer("busRouteLine");
-      if (map.getSource("busRoute")) map.removeSource("busRoute");
+          if (!response.ok) continue;
 
-      map.addSource("busRoute", {
-        type: "geojson",
-        data: geojson,
-      });
+          const geojson = await response.json();
+          const sourceId = `busRoute${i}`;
+          const layerId = `busRouteLine${i}`;
 
-      map.addLayer({
-        id: "busRouteLine",
-        type: "line",
-        source: "busRoute",
-        paint: {
-          "line-color": "#00bfff",
-          "line-width": 5,
-          "line-opacity": 0.8,
-        },
-      });
+          if (map.getLayer(layerId)) map.removeLayer(layerId);
+          if (map.getSource(sourceId)) map.removeSource(sourceId);
 
-      coordinates.forEach((coord, index) => {
-        const marker = document.createElement("div");
-        marker.className = "bus-marker";
-        marker.style.width = "18px";
-        marker.style.height = "18px";
-        marker.style.background = "#00bfff";
-        marker.style.borderRadius = "50%";
-        marker.style.border = "2px solid #fff";
-        marker.style.boxShadow = "0 0 4px #333";
+          map.addSource(sourceId, { type: "geojson", data: geojson });
+          map.addLayer({
+            id: layerId,
+            type: "line",
+            source: sourceId,
+            paint: {
+              "line-color": routes[j].color,
+              "line-width": 5,
+              "line-opacity": .6,
+            },
+          });
 
-        new maplibregl.Marker({
-          element: marker,
-        })
-          .setLngLat(coord)
-          .setPopup(
-            new maplibregl.Popup().setHTML(`
-        <h3>Stop ${index + 1}</h3>
-        <p>Next bus: ${Math.floor(Math.random() * 10) + 1} mins</p>
-          `)
-          )
-          .addTo(map);
-      });
+          coords.forEach((coord: LngLat, index: number) => {
+            const marker = document.createElement("div");
+            marker.className = "bus-marker";
+            new maplibregl.Marker({ element: marker })
+              .setLngLat(coord)
+              .setPopup(
+                new maplibregl.Popup().setHTML(`
+                <h3>Stop ${index + 1}</h3>
+                <p>Next bus: ${Math.floor(Math.random() * 10) + 1} mins</p>
+              `) /////////////////!!!!!!!!!!!!!!\\\\\\\\\\\\\\\\
+              )
+              .addTo(map);
+          });
 
-      map.on("click", "busRouteLine", () => {
-        console.log("route clicked");
-      });
+          map.on("click", layerId, () => {
+            if (onRouteClick) onRouteClick(coords);
+          });
 
-      const routeCoords = geojson.features[0].geometry.coordinates;
+          const routeCoords = geojson.features[0].geometry.coordinates;
+          const bounds = routeCoords.reduce(
+            (b: maplibregl.LngLatBounds, c: maplibregl.LngLatLike) =>
+              b.extend(c),
+            new maplibregl.LngLatBounds(routeCoords[0], routeCoords[0])
+          );
 
-      const bounds = routeCoords.reduce(
-        (b: maplibregl.LngLatBounds, c: maplibregl.LngLatLike) => b.extend(c),
-        new maplibregl.LngLatBounds(routeCoords[0], routeCoords[0])
-      );
+          map.fitBounds(bounds, { padding: 50 });
 
-      map.fitBounds(bounds, { padding: 50 });
-      const start = routeCoords[0];
-      const end = routeCoords[routeCoords.length - 1];
-
-      new maplibregl.Marker({ color: "blue" }).setLngLat(start).addTo(map);
-      new maplibregl.Marker({ color: "red" }).setLngLat(end).addTo(map);
+          new maplibregl.Marker({ color: "blue" })
+            .setLngLat(routeCoords[0])
+            .addTo(map);
+          new maplibregl.Marker({ color: "red" })
+            .setLngLat(routeCoords[routeCoords.length - 1])
+            .addTo(map);
+        }
+      }
     };
 
     if (!map.isStyleLoaded()) {
-      map.once("load", loadRoute);
+      map.once("load", loadRoutes);
     } else {
-      loadRoute();
+      loadRoutes();
     }
-  }, [coordinates]);
+  }, [routes, onRouteClick]);
 
   return <div ref={mapContainerRef} className="w-full h-full rounded-lg" />;
 }
