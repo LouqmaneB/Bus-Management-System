@@ -37,7 +37,7 @@ export default function MapComponent({
       style: MAP_STYLE,
       center: [-5.561056, 33.859044],
       zoom: 12,
-      scrollZoom: false,
+      scrollZoom: true,
       maxBounds: [
         [-5.62397, 33.74689],
         [-5.34759, 33.94706],

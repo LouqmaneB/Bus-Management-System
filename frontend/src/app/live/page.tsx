@@ -7,11 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MapWithFullscreen } from "@/components/ui/MapWithFullscreen";
 
-type routeProps={
+type routeProps = {
   color: string;
-  route: LngLat[]
-}[]
+  route: LngLat[];
+}[];
 
 export default function Live() {
   // coordinates to be fetched; data for testing
@@ -35,9 +36,11 @@ export default function Live() {
           <CardDescription>Live tracking of buses</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative aspect-video w-full overflow-hidden rounded-md border bg-muted">
-            <MapsComponent routes={coordinates} />
-          </div>
+          <MapWithFullscreen>
+            <div className="aspect-video w-full h-full">
+              <MapsComponent routes={coordinates} />
+            </div>
+          </MapWithFullscreen>
         </CardContent>
       </Card>
     </div>

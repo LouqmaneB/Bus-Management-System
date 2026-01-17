@@ -142,5 +142,8 @@
   border-radius: 8px !important;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
 }
+.maplibregl-ctrl{
+  display: none;
+}
 /*  */
 /*  */

@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { MapWithFullscreen } from "@/components/ui/MapWithFullscreen";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Route } from "@/types";
 import { MapPin } from "lucide-react";
@@ -58,7 +59,7 @@ export default function Live() {
       setCoordinates(coordinatesByRoute);
     };
     fetchRoutes().catch((error) =>
-      console.error("Error fetching routes:", error)
+      console.error("Error fetching routes:", error),
     );
   }, []);
   return (
@@ -80,9 +81,11 @@ export default function Live() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="relative aspect-video w-full overflow-hidden rounded-md border bg-muted">
-              <MapsComponent routes={coordinates} />
-            </div>
+            <MapWithFullscreen>
+              <div className="aspect-video w-full h-full">
+                <MapsComponent routes={coordinates} />
+              </div>
+            </MapWithFullscreen>
           </CardContent>
         </Card>
 
