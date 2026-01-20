@@ -1,7 +1,6 @@
 // /api/route/style/
-import type { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const res = await fetch(
     `https://api.maptiler.com/maps/streets/style.json?key=${process.env.MAPTILER_KEY}`
   );

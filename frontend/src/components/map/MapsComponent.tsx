@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
+import { loadRTLPlugin } from "@/lib/maplibre-rtl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 export type LngLat = [number, number];
@@ -31,6 +32,8 @@ export default function MapComponent({
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
+
+    loadRTLPlugin();
 
     mapRef.current = new maplibregl.Map({
       container: mapContainerRef.current,
