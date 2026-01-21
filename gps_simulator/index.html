@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bus Position Provider</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        text-align: center;
+      }
+      button {
+        padding: 12px 20px;
+        margin: 10px;
+        font-size: 16px;
+      }
+      #status {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>🚍 Bus Position Provider</h2>
+
+    <p><strong>Bus ID:</strong> bus-1</p>
+
+    <button onclick="startTracking()">▶️ Start Tracking</button>
+    <button onclick="stopTracking()">⏹️ Stop Tracking</button>
+
+    <div id="status">Status: idle</div>
+
+    <script>
+      const BUS_ID = "6970be3fc07d76685b53d079";
+      const API_URL = "https://gps-simulator-production.up.railway.app/";
+
+      let intervalId = null;
+
+      function startTracking() {
+        if (!navigator.geolocation) {
+          alert("Geolocation not supported");
+          return;
+        }
+
+        document.getElementById("status").innerText = "Status: tracking...";
+
+        intervalId = setInterval(() => {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const payload = {
+                busId: BUS_ID,
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+
+              await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+
+              document.getElementById("status").innerText =
+                `Sent: ${payload.lat.toFixed(5)}, ${payload.lng.toFixed(5)}`;
+            },
+            () => {
+              document.getElementById("status").innerText = "GPS error";
+            },
+            { enableHighAccuracy: true },
+          );
+        }, 5000); // every 5 seconds
+      }
+
+      function stopTracking() {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+          document.getElementById("status").innerText = "Status: stopped";
+        }
+      }
+    </script>
+  </body>
+</html>
