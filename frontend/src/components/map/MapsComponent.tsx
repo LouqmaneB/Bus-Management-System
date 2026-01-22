@@ -80,8 +80,8 @@ export default function MapComponent({
           const sourceId = `busRoute${i}`;
           const layerId = `busRouteLine${i}`;
 
-          if (map.getLayer(layerId)) map.removeLayer(layerId);
-          if (map.getSource(sourceId)) map.removeSource(sourceId);
+          if (map?.getLayer(layerId)) map.removeLayer(layerId);
+          if (map?.getSource(sourceId)) map.removeSource(sourceId);
 
           map.addSource(sourceId, { type: "geojson", data: geojson });
           map.addLayer({
