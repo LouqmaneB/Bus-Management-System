@@ -33,7 +33,7 @@
 
     <script>
       const BUS_ID = "6970be3fc07d76685b53d079";
-      const API_URL = "https://gps-simulator-production.up.railway.app/";
+      const API_URL = "https://gps-simulator-production.up.railway.app";
 
       let intervalId = null;
 
@@ -54,7 +54,7 @@
                 lng: position.coords.longitude,
               };
 
-              await fetch(API_URL, {
+              await fetch(`${API_URL}/api/bus-positions`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
