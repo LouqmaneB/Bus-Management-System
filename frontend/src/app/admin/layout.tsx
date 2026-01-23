@@ -1,10 +1,10 @@
 import {
   Bus,
+  BusFront,
   Home,
   LogOut,
   MapPin,
   Route,
-  Settings,
   Users,
 } from "lucide-react";
 
@@ -94,9 +94,9 @@ export default function AdminLayout({
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <Link href="/admin/settings">
-                        <Settings className="h-4 w-4" />
-                        <span>Settings</span>
+                      <Link href="/admin/trips">
+                        <BusFront className="h-4 w-4" />
+                        <span>Trips</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
