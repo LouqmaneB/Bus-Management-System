@@ -6,7 +6,7 @@ export default function Route() {
       <Card>
         <CardContent>
           <div className="aspect-video w-full overflow-hidden rounded-md border bg-muted">
-            <iframe src="http://127.0.0.1:5000" width="100%" height="100%" />
+            <iframe src="/flask/itineraire" width="100%" height="100%" />
           </div>
         </CardContent>
       </Card>

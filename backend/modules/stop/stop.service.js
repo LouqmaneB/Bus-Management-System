@@ -6,7 +6,7 @@ export default class StopServices {
   async getStops(query) {
     const {
       page = 1,
-      limit = 10,
+      limit = 100,
       sort = "created_at",
       order = "desc",
       search = "",

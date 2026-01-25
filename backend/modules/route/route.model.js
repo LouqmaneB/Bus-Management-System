@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import { nanoid } from "nanoid";
 
 const routeSchema = new mongoose.Schema(
   {
-    routeNumber: { type: String, required: true, unique: true, default: Date.now() },
+    routeNumber: { type: String, required: true, unique: true, default: () => nanoid() },
     routeName: { type: String, required: true },
     description: String,
     stops: [

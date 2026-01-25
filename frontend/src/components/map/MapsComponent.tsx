@@ -59,9 +59,10 @@ export default function MapComponent({
   useEffect(() => {
     if (!mapRef.current || !routes) return;
 
-    const map = mapRef.current;
-
     const loadRoutes = async () => {
+      const map = mapRef.current;
+      if (!map) return;
+
       for (let j = 0; j < routes.length; j++) {
         const flippedRoutes = flipCoordinates(routes[j].route);
 
@@ -80,11 +81,14 @@ export default function MapComponent({
           const sourceId = `busRoute${i}`;
           const layerId = `busRouteLine${i}`;
 
-          if (map?.getLayer(layerId)) map.removeLayer(layerId);
-          if (map?.getSource(sourceId)) map.removeSource(sourceId);
+          const currentMap = mapRef.current;
+          if (!currentMap) return;
 
-          map.addSource(sourceId, { type: "geojson", data: geojson });
-          map.addLayer({
+          if (currentMap.getLayer(layerId)) currentMap.removeLayer(layerId);
+          if (currentMap.getSource(sourceId)) currentMap.removeSource(sourceId);
+
+          currentMap.addSource(sourceId, { type: "geojson", data: geojson });
+          currentMap.addLayer({
             id: layerId,
             type: "line",
             source: sourceId,
@@ -132,12 +136,18 @@ export default function MapComponent({
       }
     };
 
+    const map = mapRef.current;
+    if (!map) return;
+
     if (!map.isStyleLoaded()) {
       map.once("load", loadRoutes);
     } else {
       loadRoutes();
     }
-  }, [routes, onRouteClick]);
 
+    return () => {
+      mapRef.current?.off("load", loadRoutes);
+    };
+  }, [routes, onRouteClick]);
   return <div ref={mapContainerRef} className="w-full h-full rounded-lg" />;
 }

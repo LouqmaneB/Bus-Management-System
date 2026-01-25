@@ -2,7 +2,6 @@ import {
   Bus,
   BusFront,
   Home,
-  LogOut,
   MapPin,
   Route,
   Users,
@@ -22,14 +21,24 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import LogOutButton from '@/components/layouts/logOut'
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("admin_token");
+  console.log(token);
+
+  if (!token?.value) {
+    redirect("/login");
+  }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -105,14 +114,7 @@ export default function AdminLayout({
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter className="border-t p-4">
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              // onClick={() => setIsLoggedIn(false)}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
+            <LogOutButton />
           </SidebarFooter>
         </Sidebar>
 
