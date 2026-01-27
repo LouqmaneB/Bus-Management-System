@@ -9,7 +9,7 @@ const busSchema = new mongoose.Schema(
       enum: ["active", "maintenance", "inactive"],
       default: "inactive",
     },
-    driver: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    // the driver is not directly affected to bus, cause it can be changed in mid-day
   },
   { timestamps: true }
 );
