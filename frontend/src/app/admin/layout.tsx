@@ -105,7 +105,7 @@ export default async function AdminLayout({
                     <SidebarMenuButton asChild>
                       <Link href="/admin/trips">
                         <BusFront className="h-4 w-4" />
-                        <span>Trips</span>
+                        <span>Schedulings</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

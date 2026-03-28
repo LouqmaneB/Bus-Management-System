@@ -1,10 +1,12 @@
 import express from "express";
-import { createTripPlan, getTripPlans, getTripRuns } from "../controllers/tripPlanController.js";
+import { createTripPlan, getTripPlans, getTripPlan, getTripRuns, deleteTripPlan } from "./trip.controller.js";
 
-const router = express.Router();
+const tripRouter = express.Router();
 
-router.post("/tripPlans", createTripPlan);
-router.get("/tripPlans", getTripPlans);
-router.get("/tripRuns", getTripRuns);
+tripRouter.post("/tripPlans", createTripPlan);
+tripRouter.get("/tripPlans", getTripPlans);
+tripRouter.delete("/tripPlans/:id", deleteTripPlan);
+tripRouter.get("/tripPlans/:id", getTripPlan);
+tripRouter.get("/tripRuns", getTripRuns);
 
-export default router;
+export default tripRouter;

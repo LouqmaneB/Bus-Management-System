@@ -1,4 +1,4 @@
-import { TripPlan, TripRun } from "../models/trip.model.js";
+import { TripPlan, TripRun } from "./trip.model.js";
 
 /**
  * Create a trip plan and generate trip runs
@@ -8,54 +8,83 @@ export default class StopServices {
     const {
       route,
       bus,
-      serviceDate,
-      startTime,
-      endTime,
+      startDate,
+      endDate,
+      daysOfTheWeek,
+      serviceStartTime,
+      serviceEndTime,
       tripDurationMinutes,
-      breakMinutes,
+      breakMinutes = 0,
       status,
     } = data;
 
-    const tripPlan = await TripPlan.create({
-      route,
-      bus,
-      serviceDate,
-      startTime,
-      endTime,
-      tripDurationMinutes,
-      breakMinutes,
-      status,
-    });
-
-    let currentTime = startTime;
-    const tripRuns = [];
-
-    while (currentTime < endTime) {
-      const [hours, minutes] = currentTime.split(":").map(Number);
-      const startMinutes = hours * 60 + minutes;
-      const runEndMinutes = startMinutes + tripDurationMinutes;
-
-      const runEndHours = Math.floor(runEndMinutes / 60);
-      const runEndMins = runEndMinutes % 60;
-      const runEndTime = `${String(runEndHours).padStart(2, "0")}:${String(runEndMins).padStart(2, "0")}`;
-
-      if (runEndTime > endTime) break;
-
-      tripRuns.push({
-        tripPlan: tripPlan._id,
-        startTime: currentTime,
-        endTime: runEndTime,
-      });
-
-      const nextStartMinutes = runEndMinutes + breakMinutes;
-      const nextHours = Math.floor(nextStartMinutes / 60);
-      const nextMins = nextStartMinutes % 60;
-      currentTime = `${String(nextHours).padStart(2, "0")}:${String(nextMins).padStart(2, "0")}`;
+    if (!daysOfTheWeek?.length) {
+      const error = new Error("At least one day of the week must be selected");
+      error.statusCode = 400;
+      throw error;
     }
 
-    await TripRun.insertMany(tripRuns);
+    const toMinutes = (t) => {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
+    };
 
-    return { tripPlan, generatedTrips: tripRuns.length };
+    const toTimeString = (mins) => {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    };
+
+    const plans = [];
+    const runs = [];
+
+    let currentDate = new Date(startDate);
+    const lastDate = new Date(endDate);
+
+    while (currentDate <= lastDate) {
+      const weekday = currentDate.getDay();
+
+      if (daysOfTheWeek.includes(weekday)) {
+        const tripPlan = await TripPlan.create({
+          route,
+          bus,
+          serviceDate: currentDate,
+          startTime: serviceStartTime,
+          endTime: serviceEndTime,
+          tripDurationMinutes,
+          breakMinutes,
+          status,
+        });
+
+        plans.push(tripPlan);
+
+        let currentMinutes = toMinutes(serviceStartTime);
+        const endMinutes = toMinutes(serviceEndTime);
+
+        while (currentMinutes + tripDurationMinutes <= endMinutes) {
+          const runEndMinutes = currentMinutes + tripDurationMinutes;
+
+          runs.push({
+            tripPlan: tripPlan._id,
+            startTime: toTimeString(currentMinutes),
+            endTime: toTimeString(runEndMinutes),
+          });
+
+          currentMinutes = runEndMinutes + breakMinutes;
+        }
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    if (runs.length) {
+      await TripRun.insertMany(runs);
+    }
+
+    return {
+      tripPlansCreated: plans.length,
+      tripRunsCreated: runs.length,
+    };
   }
 
   /**
@@ -68,6 +97,28 @@ export default class StopServices {
       .sort({ serviceDate: 1 });
     return { tripPlans, count: tripPlans.length };
   }
+
+  /**
+   * Get a trip plan by id
+   */
+async getTripPlanService(id) {
+  const tripPlan = await TripPlan.findById(id)
+    .populate("route")
+    .populate("bus")
+    .populate({
+      path: "route",
+      populate: {
+        path: "stops.stopId",
+        model: "Stop",
+      },
+    });
+
+  if (!tripPlan) {
+    throw new Error("Trip plan not found");
+  }
+
+  return { tripPlan };
+}
 
   /**
    * Get all trip runs, optionally filter by date
@@ -85,5 +136,34 @@ export default class StopServices {
       .sort({ startTime: 1 });
 
     return { trips, count: trips.length };
+  }
+
+  /**
+   * Delete a trip run
+   */
+  async deleteTripRun(id) {
+    const trip = await TripRun.findByIdAndUpdate(
+      id,
+      { canceled: true },
+      { new: true },
+    );
+
+    if (!trip) {
+      throw new Error("Trip not found");
+    }
+
+    return { trip };
+  }
+
+  /**
+   * Delete a trip plan
+   */
+  async deleteTripPlan(id) {
+    const tripPlan = await TripPlan.findByIdAndDelete(id);
+    if (!tripPlan) {
+      throw new Error("Trip not found");
+    }
+    await TripRun.deleteMany({ tripPlan: id });
+    return { tripPlan };
   }
 }

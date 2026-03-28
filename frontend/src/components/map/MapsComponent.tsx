@@ -62,6 +62,7 @@ export default function MapComponent({
     const loadRoutes = async () => {
       const map = mapRef.current;
       if (!map) return;
+  console.log(routes)
 
       for (let j = 0; j < routes.length; j++) {
         const flippedRoutes = flipCoordinates(routes[j].route);

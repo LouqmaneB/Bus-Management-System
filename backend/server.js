@@ -8,6 +8,7 @@ import routeRouter from "./modules/route/route.routes.js";
 import stopRouter from "./modules/stop/stop.routes.js";
 import userRouter from "./modules/user/user.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
+import tripRouter from "./modules/trip/trip.route.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 
@@ -31,6 +32,7 @@ app.use("/api/buses", busRouter);
 app.use("/api/routes", routeRouter);
 app.use("/api/stops", stopRouter);
 app.use("/api/users", userRouter);
+app.use("/api/trips", tripRouter);
 
 app.use(errorHandler)
 
