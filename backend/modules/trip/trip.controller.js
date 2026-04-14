@@ -38,8 +38,8 @@ export const getTripPlan = asyncHandler(async (req, res) => {
  * @access Public / Admin
  */
 export const getTripRuns = asyncHandler(async (req, res) => {
-  const { date } = req.query;
-  const result = await tripService.getTripRunsService(date);
+  const { page, limit } = req.query;
+  const result = await tripService.getTripRunsService(page, limit);
   res.json({ success: true, data: result });
 });
 

@@ -21,7 +21,7 @@ export default function Header() {
             Live
           </Link>
           <Link href="/search" className="text-sm font-medium text-primary">
-            Search
+            Routes
           </Link>
           <Link href="/favorites" className="text-sm font-medium">
             Favorites

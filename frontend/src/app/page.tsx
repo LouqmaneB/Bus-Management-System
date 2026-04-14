@@ -52,7 +52,7 @@ export default function Home() {
                 variant="outline"
                 className="bg-white/20 text-white border-white/40 hover:bg-white/30 hover:text-white"
               >
-                <Link href="/routes">View All Routes</Link>
+                <Link href="/search?tab=routes">View All Routes</Link>
               </Button>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function Home() {
           </div>
           <div className="mt-8 text-center">
             <Button asChild variant={"outline"}>
-              <Link href="/routes">View All Routes</Link>
+              <Link href="/search?tab=routes">View All Routes</Link>
             </Button>
           </div>
         </div>

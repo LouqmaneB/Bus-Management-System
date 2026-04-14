@@ -101,41 +101,50 @@ export default class StopServices {
   /**
    * Get a trip plan by id
    */
-async getTripPlanService(id) {
-  const tripPlan = await TripPlan.findById(id)
-    .populate("route")
-    .populate("bus")
-    .populate({
-      path: "route",
-      populate: {
-        path: "stops.stopId",
-        model: "Stop",
-      },
-    });
+  async getTripPlanService(id) {
+    const tripPlan = await TripPlan.findById(id)
+      .populate("route")
+      .populate("bus")
+      .populate({
+        path: "route",
+        populate: {
+          path: "stops.stopId",
+          model: "Stop",
+        },
+      });
 
-  if (!tripPlan) {
-    throw new Error("Trip plan not found");
+    if (!tripPlan) {
+      throw new Error("Trip plan not found");
+    }
+
+    return { tripPlan };
   }
 
-  return { tripPlan };
-}
-
   /**
-   * Get all trip runs, optionally filter by date
+   * Get all trip runs
    */
-  async getTripRunsService(date) {
-    const filter = {};
-    if (date) filter.startTime = { $regex: `^${date}` };
-
-    const trips = await TripRun.find(filter)
+  async getTripRunsService(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const total = await TripRun.countDocuments();
+    const trips = await TripRun.find()
       .populate({
         path: "tripPlan",
         populate: ["route", "bus"],
       })
       .populate("driverShifts.driver")
-      .sort({ startTime: 1 });
+      .sort({ startTime: 1 })
+      .skip(skip)
+      .limit(limit);
 
-    return { trips, count: trips.length };
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      trips,
+      total,
+      totalPages,
+      currentPage: page,
+      limit,
+    };
   }
 
   /**

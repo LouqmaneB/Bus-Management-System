@@ -30,14 +30,25 @@ type TripRun = {
 export default function TripRunsList() {
   const [tripRuns, setTripRuns] = useState<TripRun[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  
+  const itemsPerPage = 5; // Adjust this value as needed
 
   useEffect(() => {
     const fetchTripRuns = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
+      setLoading(true);
       try {
-        const res = await fetch(`${api_url}/api/trips/tripRuns`);
-        const {data} = await res.json();
+        const res = await fetch(
+          `${api_url}/api/trips/tripRuns?page=${currentPage}&limit=${itemsPerPage}`
+        );
+        const { data } = await res.json();
+        
         setTripRuns(data.trips);
+        setTotalPages(data.totalPages || Math.ceil(data.total / itemsPerPage));
+        setTotalItems(data.total || data.trips.length);
       } catch (err) {
         console.error("Error fetching trip runs:", err);
       } finally {
@@ -46,13 +57,26 @@ export default function TripRunsList() {
     };
 
     fetchTripRuns();
-  }, []);
+  }, [currentPage]); // Re-fetch when page changes
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   if (loading) return <p>Loading daily trips...</p>;
   if (tripRuns.length === 0) return <p>No trips found for today.</p>;
 
   return (
     <div className="space-y-4">
+      {/* Items info */}
+      <div className="flex justify-between items-center text-sm text-gray-600 mb-4">
+        <p>Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} trips</p>
+      </div>
+
+      {/* Trip cards */}
       {tripRuns.map((trip) => (
         <Card key={trip._id}>
           <CardHeader>
@@ -86,6 +110,54 @@ export default function TripRunsList() {
           </CardContent>
         </Card>
       ))}
+
+      {/* Pagination controls */}
+      <div className="flex justify-center items-center gap-2 mt-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        
+        <div className="flex items-center gap-2">
+          {/* Page numbers */}
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            
+            return (
+              <Button
+                key={pageNum}
+                variant={currentPage === pageNum ? "default" : "outline"}
+                size="sm"
+                onClick={() => handlePageChange(pageNum)}
+              >
+                {pageNum}
+              </Button>
+            );
+          })}
+        </div>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }

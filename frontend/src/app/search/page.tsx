@@ -15,6 +15,7 @@ import { MapWithFullscreen } from "@/components/ui/MapWithFullscreen";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Route } from "@/types";
 import { MapPin } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type routeProps = {
@@ -23,7 +24,11 @@ type routeProps = {
 };
 
 export default function Live() {
-  const [selectedTab, setSelectedTab] = useState<"search" | "routes">("search");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [selectedTab, setSelectedTab] = useState<"search" | "routes">(
+    tabParam === "routes" ? "routes" : "search",
+  );
   const [coordinates, setCoordinates] = useState<routeProps[]>([]);
   useEffect(() => {
     const fetchRoutes = async () => {
